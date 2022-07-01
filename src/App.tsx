@@ -1,10 +1,63 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import "./App.css";
+import Gather from "./components/Gather";
+import Resend from "./components/Resend";
+
+import { initializeApp } from "firebase/app";
+import {
+    getAuth,
+    isSignInWithEmailLink,
+    signInWithEmailLink,
+    onAuthStateChanged,
+} from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+
+// Confirm the link is a sign-in with email link.
+
+// TODO: Replace the following with your app's Firebase project configuration
+const firebaseConfig = require("./firebase.json");
+
+const app = initializeApp(firebaseConfig);
 
 function App() {
     let [email, setEmail] = useState("");
     let [sent, setSent] = useState(false);
+    let [loggedIn, setLoggedIn] = useState(false);
+    let navigate = useNavigate();
+    useEffect(() => {
+        const auth = getAuth();
+        if (isSignInWithEmailLink(auth, window.location.href)) {
+            let x = window.localStorage.getItem("emailForSignIn");
+            if (!x) return;
+
+            setEmail(x);
+            signInWithEmailLink(auth, email, window.location.href)
+                .then((result) => {
+                    // Clear email from storage.
+                    window.localStorage.removeItem("emailForSignIn");
+                    // You can access the new user via result.user
+                    // Additional user info profile not available via:
+                    // result.additionalUserInfo.profile == null
+                    // You can check if the user is new or existing:
+                    // result.additionalUserInfo.isNewUser
+                    navigate("./dashboard", { replace: true });
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+              onAuthStateChanged(auth, (user) => {
+                  if (user) {
+                      // User is signed in, see docs for a list of available properties
+                      // https://firebase.google.com/docs/reference/js/firebase.User
+                      navigate("./dashboard", {replace: true})
+                      // ...
+                  }
+              });
+        }
+    });
+
     return (
         <div className="App overflow-hidden">
             <div className="background flex flex-col align-center justify-center fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
@@ -19,40 +72,16 @@ function App() {
                     poolesville_hacks
                 </h1>
                 {!sent ? (
-                    <form
-                        className="flex flex-col items-center w-[80%] absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            setSent(true);
-                        }}
-                    >
-                        <label className="text-white font-light self-start">
-                            EMAIL
-                        </label>
-                        <input
-                            onChange={(e) => setEmail(e.target.value)}
-                            type="email"
-                            name="email"
-                            value={email}
-                            className="w-[100%] h-12 text-white bg-transparent border-2 focus:rounded-none focus:outline-none p-2"
-                            required
-                        ></input>
-                        <input
-                            className="btn text-white border-2 h-12 px-10 mt-8 cursor-pointer"
-                            type="submit"
-                        ></input>
-                    </form>
+                    <Gather
+                        email={email}
+                        setEmail={setEmail}
+                        setSent={setSent}
+                    />
                 ) : (
-                    <div className="flex flex-col items-center gap-10 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
-                        <p className="text-white font-light text-xl">
-                            A login link has been sent to your email.
-                        </p>
-                        <button className="btn text-white border-2 h-12 px-10 mt-4 cursor-pointer">
-                            Resend
-                        </button>
-                    </div>
+                    <Resend email={email} />
                 )}
             </div>
+            ) : (<div></div>)
         </div>
     );
 }
