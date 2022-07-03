@@ -23,7 +23,6 @@ const app = initializeApp(firebaseConfig);
 function App() {
     let [email, setEmail] = useState("");
     let [sent, setSent] = useState(false);
-    let [loggedIn, setLoggedIn] = useState(false);
     let navigate = useNavigate();
     useEffect(() => {
         const auth = getAuth();
@@ -56,7 +55,7 @@ function App() {
                   }
               });
         }
-    });
+    }, [email, navigate]);
 
     return (
         <div className="App overflow-hidden">

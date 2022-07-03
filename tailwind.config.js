@@ -3,8 +3,10 @@ module.exports = {
     theme: {
         extend: {
             colors: {
-                'base-blue': "#000107"
-            }
+                "base-blue": "#000107",
+                "base-purple": "#292837"
+                
+            },
         },
     },
     plugins: [],
