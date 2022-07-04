@@ -4,8 +4,8 @@ module.exports = {
         extend: {
             colors: {
                 "base-blue": "#000107",
-                "base-purple": "#292837"
-                
+                "base-purple": "#292837",
+                "dark-blue": "#070611",
             },
         },
     },
