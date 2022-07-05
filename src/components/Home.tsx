@@ -10,7 +10,7 @@ import {
 
 import { User, getAuth, updateProfile } from "firebase/auth";
 import { getStorage, ref, uploadBytes } from "firebase/storage";
-import { doc, setDoc, Firestore } from "firebase/firestore";
+import { doc, setDoc, Firestore, updateDoc } from "firebase/firestore";
 import Modal from "./Modal";
 
 interface Props {
@@ -33,22 +33,18 @@ const Home = ({ user, status, setStatus, db }: Props) => {
     const [fileNames, setFileNames] = useState<string[]>([]);
     const [store, setStore] = useState<Files>({});
     const [show, setShow] = useState(false);
-    const renameFile = (originalFile: File, newName: string): File => {
-        return new File([originalFile], newName, {
-            type: originalFile.type,
-            lastModified: originalFile.lastModified,
-        });
-    };
+
     const dropHandler = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
-
+        ref1.current?.classList.remove("bg-base-purple");
+        ref2.current?.classList.remove("bg-base-purple");
         let pdfRef;
 
         if (e.dataTransfer.items) {
             pdfRef = e.dataTransfer.items[0];
             if (pdfRef.kind === "file") {
                 let file = pdfRef.getAsFile();
-                console.log(file?.name);
+
                 if (file) {
                     if (e.currentTarget.id === "release") {
                         setFileNames((fil) => {
@@ -239,12 +235,11 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                 onSubmit={(e: FormEvent<HTMLFormElement>) => {
                                     e.preventDefault();
                                     const target = e.currentTarget;
-                                    console.log(store);
-                                    if (
-                                        !store ||
-                                        !store.release ||
-                                        !store.rules
-                                    )
+
+                                    if (!store) return setShow(true);
+                                    const release = store.release;
+                                    const rules = store.rules;
+                                    if (!release || !rules)
                                         return setShow(true);
                                     const releaseRef = ref(
                                         storage,
@@ -266,18 +261,35 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                             user.uid
                                         }_rules.pdf`
                                     );
-                                    
-                                    uploadBytes(releaseRef, store.release).then(
+
+                                    uploadBytes(releaseRef, release).then(
                                         (snapshot) => {
                                             console.log(
                                                 "Uploaded a release file!"
                                             );
-                                        }
-                                    );
-                                    uploadBytes(rulesRef, store.rules).then(
-                                        (snapshot) => {
-                                            console.log(
-                                                "Uploaded a rules file"
+                                            uploadBytes(rulesRef, rules).then(
+                                                async (snapshot) => {
+                                                    setStatus([
+                                                        true,
+                                                        true,
+                                                        false,
+                                                        true,
+                                                    ]);
+                                                    await updateDoc(
+                                                        doc(
+                                                            db,
+                                                            "users",
+                                                            user.uid
+                                                        ),
+                                                        {
+                                                            "status.documents":
+                                                                true,
+                                                        }
+                                                    );
+                                                    console.log(
+                                                        "Uploaded a rules file!"
+                                                    );
+                                                }
                                             );
                                         }
                                     );
