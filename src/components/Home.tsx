@@ -1,9 +1,16 @@
-import { FormEvent, useEffect, useState, Dispatch, SetStateAction } from "react";
-
+import {
+    FormEvent,
+    useEffect,
+    useState,
+    Dispatch,
+    SetStateAction,
+    DragEvent,
+    useRef,
+} from "react";
 
 import { User } from "firebase/auth";
 
-import { doc, setDoc, Firestore} from "firebase/firestore";
+import { doc, setDoc, Firestore } from "firebase/firestore";
 
 interface Props {
     user: User;
@@ -12,13 +19,54 @@ interface Props {
     db: Firestore;
 }
 
+interface Files {
+    release?: File;
+    rules?: File;
+}
+
 const Home = ({ user, status, setStatus, db }: Props) => {
+    const ref = useRef<HTMLLabelElement>(null);
+    const ref2 = useRef<HTMLLabelElement>(null);
+    const [fileNames, setFileNames] = useState<string[]>([]);
+    const store: Files = {};
+
+    const dropHandler = (e: DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+
+        let pdfRef;
+
+        if (e.dataTransfer.items) {
+            pdfRef = e.dataTransfer.items[0];
+            if (pdfRef.kind === "file") {
+                let file = pdfRef.getAsFile();
+                console.log(file?.name);
+                if (file) {
+                    if (e.currentTarget.id === "release") {
+                        setFileNames((fil) => {
+                            let arr = [...fil];
+
+                            arr[0] = file ? file.name : "";
+                            return arr;
+                        });
+                        store.release = file;
+                    } else if (e.currentTarget.id === "rules") {
+                        setFileNames((fil) => {
+                            let arr = [...fil];
+                            arr[1] = file ? file.name : "";
+                            return arr;
+                        });
+                        store.rules = file;
+                    }
+                }
+            }
+        }
+    };
 
     return (
-        <div className="h-[100%] flex-grow flex justify-center relative">
+        <div className="flex-grow flex py-8 justify-center relative overflow-y-scroll">
             {status[3] ? (
-                <div className="flex flex-col gap-10 mt-8">
-                    <div className="flex justify-left items-center gap-8 columns-2">
+                <div className="flex flex-col gap-10">
+                    <div className="flex justify-left items-center gap-8 ">
                         <div className="flex flex-col gap-8">
                             <div
                                 className={`w-20 h-20 rounded-full ${
@@ -74,10 +122,10 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                         </div>
                         <div className="flex flex-col h-[100%] justify-around gap-8">
                             <h1 className="text-white text-4xl font-bold">
-                                Submit contact information
+                                Submit Contact Information
                             </h1>
                             <h1 className="text-white text-4xl font-bold">
-                                Submit documents
+                                Submit Documents
                             </h1>
                             <h1 className="text-white text-4xl font-bold">
                                 Confirmation
@@ -89,13 +137,16 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                             className="w-[100%] bg-dark-blue rounded p-6 flex flex-col"
                             onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                                 e.preventDefault();
-                                
+
                                 await setDoc(
                                     doc(db, "users", user.uid),
                                     {
                                         name: e.currentTarget.fullname.value,
                                         grade: e.currentTarget.grade.value,
                                         school: e.currentTarget.school.value,
+                                        status: {
+                                            contact: true,
+                                        },
                                     },
                                     { merge: true }
                                 );
@@ -120,8 +171,8 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                     </label>
                                     <input
                                         type="number"
-                                        min="10"
-                                        max="100"
+                                        min="6"
+                                        max="12"
                                         className="p-3 text-white focus:outline-none bg-base-purple rounded"
                                         name="grade"
                                         required
@@ -150,6 +201,180 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                 type="submit"
                             ></input>
                         </form>
+                    )}
+                    {!status[1] && status[0] && (
+                        <div>
+                            <form
+                                className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8"
+                                onSubmit={(e: FormEvent<HTMLFormElement>) =>
+                                    e.preventDefault()
+                                }
+                            >
+                                <label className="text-white text-2xl font-semibold underline pb-3 cursor-pointer">
+                                    <a className="flex items-center gap-2">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            version="1.1"
+                                            width="30"
+                                            height="30"
+                                            viewBox="0 0 24 24"
+                                            fill="white"
+                                        >
+                                            <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+                                        </svg>
+                                        Release of Liability
+                                    </a>
+                                </label>
+
+                                {/* <div
+                                    className="w-full h-full absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2"
+                                    id="dropbox"
+                                ></div> */}
+                                <label
+                                    className="text-white relative w-full h-[300px] text-xl font-bold flex flex-col justify-center items-center border-dashed border-white border-8 rounded-lg"
+                                    ref={ref}
+                                >
+                                    <div
+                                        className="cursor-pointer w-full h-full absolute top-0 left-0"
+                                        onDrop={dropHandler}
+                                        onDragEnter={(e) => {
+                                            ref.current?.classList.add(
+                                                "bg-base-purple"
+                                            );
+                                        }}
+                                        onDragLeave={(e) => {
+                                            ref.current?.classList.remove(
+                                                "bg-base-purple"
+                                            );
+                                        }}
+                                        onDragOver={(e) => e.preventDefault()}
+                                        id="release"
+                                    ></div>
+                                    <svg
+                                        width="150"
+                                        height="150"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill="currentColor"
+                                            d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
+                                        />
+                                    </svg>
+                                    <div className="flex">
+                                        Drop or&nbsp;
+                                        <span className="w-max underline">
+                                            upload file
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            let curFiles =
+                                                e.currentTarget.files;
+                                            if (!curFiles) return;
+                                            if (!curFiles[0]) return;
+                                            setFileNames((fil) => {
+                                                let arr = [...fil];
+                                                arr[0] = curFiles
+                                                    ? curFiles[0].name
+                                                    : "";
+                                                console.log(arr);
+                                                return arr;
+                                            });
+                                            store.release = curFiles[0];
+                                        }}
+                                    ></input>
+                                </label>
+
+                                <label className="text-white text-2xl font-semibold underline p-3 cursor-pointer">
+                                    <a className="flex items-center gap-2">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            version="1.1"
+                                            width="30"
+                                            height="30"
+                                            viewBox="0 0 24 24"
+                                            fill="white"
+                                        >
+                                            <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z" />
+                                        </svg>
+                                        Rules and Regulations
+                                    </a>
+                                </label>
+                                <label
+                                    className="text-white relative w-full h-[300px] text-xl font-bold flex flex-col justify-center items-center border-dashed border-white border-8 rounded-lg"
+                                    ref={ref2}
+                                >
+                                    <div
+                                        className="cursor-pointer w-full h-full absolute top-0 left-0"
+                                        onDrop={dropHandler}
+                                        onDragEnter={(e) => {
+                                            ref2.current?.classList.add(
+                                                "bg-base-purple"
+                                            );
+                                        }}
+                                        onDragLeave={(e) => {
+                                            ref2.current?.classList.remove(
+                                                "bg-base-purple"
+                                            );
+                                        }}
+                                        onDragOver={(e) => e.preventDefault()}
+                                        id="rules"
+                                    ></div>
+                                    <svg
+                                        width="150"
+                                        height="150"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path
+                                            fill="currentColor"
+                                            d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z"
+                                        />
+                                    </svg>
+                                    <div className="flex">
+                                        Drop or&nbsp;
+                                        <span className="w-max underline">
+                                            upload file
+                                        </span>
+                                    </div>
+                                    <input
+                                        type="file"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            let curFiles =
+                                                e.currentTarget.files;
+                                            if (!curFiles) return;
+                                            if (!curFiles[0]) return;
+                                            setFileNames((fil) => {
+                                                let arr = [...fil];
+                                                arr[1] = curFiles
+                                                    ? curFiles[0].name
+                                                    : "";
+                                                console.log(arr);
+                                                return arr;
+                                            });
+                                            store.rules = curFiles[0];
+                                        }}
+                                    ></input>
+                                </label>
+
+                                <p className="text-white whitespace-pre-wrap pt-3 text-left">
+                                    <span className="font-bold">
+                                        Release of Liability:{" "}
+                                    </span>
+                                    {fileNames[0] || ""} {"\n"}
+                                    <span className="font-bold">
+                                        Rules and Regulations:
+                                    </span>{" "}
+                                    {fileNames[1] || ""}
+                                </p>
+                                <input
+                                    className="bg-base-purple text-white font-semibold w-1/4 py-3 rounded mt-6 self-end cursor-pointer"
+                                    type="submit"
+                                ></input>
+                            </form>
+                        </div>
                     )}
                 </div>
             ) : (

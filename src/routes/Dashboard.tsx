@@ -21,17 +21,19 @@ function Dashboard() {
     let [page, setPage] = useState("Home");
     let navigate = useNavigate();
     useEffect(() => {
-        onAuthStateChanged(auth, (chec) => {
+        onAuthStateChanged(auth, async (chec) => {
             if (chec) {
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 setUser(chec);
-                fetch("/api/", {
-                    method: "GET",
-                    headers: {
-                        Authorization: "",
-                    },
-                });
+                // const token = await chec.getIdToken()
+                // console.log(token)
+                // fetch("http://localhost:3001/api/", {
+                //     method: "POST",
+                //     headers: {
+                //         Authorization: `Bearer ${token}`,
+                //     },
+                // });
             } else {
                 navigate("/", { replace: true });
             }
@@ -59,7 +61,7 @@ function Dashboard() {
 
     return (
         <>
-            <div className="h-[100vh] w-[100vw] overflow-hidden flex">
+            <div className="h-[100vh] w-[100vw] flex">
                 <NavLeft page={page} setPage={setPage} />
 
                 {user
