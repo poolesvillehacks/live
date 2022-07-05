@@ -13,6 +13,7 @@ import {
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import {getFirestore, doc, setDoc, getDoc} from "firebase/firestore";
+import setup from "./functions/setup";
 // Confirm the link is a sign-in with email link.
 
 // TODO: Replace the following with your app's Firebase project configuration
@@ -42,18 +43,7 @@ function App() {
                     // result.additionalUserInfo.isNewUser
                     let query = await getDoc(doc(db, "users", result.user.uid))
                     if (!query.exists()) {
-                        await setDoc(doc(db, "users", result.user.uid), {
-                        name: "",
-                        code: "",
-                        email: result.user.email,
-                        school: "",
-                        grade: "",
-                        status: {
-                            confirmation: false,
-                            contact: false,
-                            documents: false
-                        }
-                    })
+                       setup(result.user, db)
                     } else {
                         console.log("Already Existed")
                     }

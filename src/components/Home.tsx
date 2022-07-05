@@ -8,9 +8,10 @@ import {
     useRef,
 } from "react";
 
-import { User } from "firebase/auth";
-
+import { User, getAuth, updateProfile } from "firebase/auth";
+import { getStorage, ref, uploadBytes } from "firebase/storage";
 import { doc, setDoc, Firestore } from "firebase/firestore";
+import Modal from "./Modal";
 
 interface Props {
     user: User;
@@ -24,12 +25,20 @@ interface Files {
     rules?: File;
 }
 
+const auth = getAuth();
+const storage = getStorage();
 const Home = ({ user, status, setStatus, db }: Props) => {
-    const ref = useRef<HTMLLabelElement>(null);
+    const ref1 = useRef<HTMLLabelElement>(null);
     const ref2 = useRef<HTMLLabelElement>(null);
     const [fileNames, setFileNames] = useState<string[]>([]);
-    const store: Files = {};
-
+    const [store, setStore] = useState<Files>({});
+    const [show, setShow] = useState(false);
+    const renameFile = (originalFile: File, newName: string): File => {
+        return new File([originalFile], newName, {
+            type: originalFile.type,
+            lastModified: originalFile.lastModified,
+        });
+    };
     const dropHandler = (e: DragEvent<HTMLDivElement>) => {
         e.preventDefault();
 
@@ -48,14 +57,22 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                             arr[0] = file ? file.name : "";
                             return arr;
                         });
-                        store.release = file;
+                        setStore((s) => {
+                            let obj = { ...s };
+                            obj.release = file ? file : undefined;
+                            return obj;
+                        });
                     } else if (e.currentTarget.id === "rules") {
                         setFileNames((fil) => {
                             let arr = [...fil];
                             arr[1] = file ? file.name : "";
                             return arr;
                         });
-                        store.rules = file;
+                        setStore((s) => {
+                            let obj = { ...s };
+                            obj.rules = file ? file : undefined;
+                            return obj;
+                        });
                     }
                 }
             }
@@ -138,18 +155,26 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                             onSubmit={async (e: FormEvent<HTMLFormElement>) => {
                                 e.preventDefault();
 
+                                const form = e.currentTarget;
+                                await updateProfile(
+                                    auth.currentUser ? auth.currentUser : user,
+                                    {
+                                        displayName: form.fullname.value,
+                                    }
+                                ).catch((e) => console.log(e));
                                 await setDoc(
                                     doc(db, "users", user.uid),
                                     {
-                                        name: e.currentTarget.fullname.value,
-                                        grade: e.currentTarget.grade.value,
-                                        school: e.currentTarget.school.value,
+                                        name: form.fullname.value,
+                                        grade: form.grade.value,
+                                        school: form.school.value,
                                         status: {
                                             contact: true,
                                         },
                                     },
                                     { merge: true }
                                 );
+
                                 setStatus([true, false, false, true]);
                             }}
                         >
@@ -204,11 +229,59 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                     )}
                     {!status[1] && status[0] && (
                         <div>
+                            <Modal
+                                text="No files to submit"
+                                show={show}
+                                showState={setShow}
+                            />
                             <form
                                 className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8"
-                                onSubmit={(e: FormEvent<HTMLFormElement>) =>
-                                    e.preventDefault()
-                                }
+                                onSubmit={(e: FormEvent<HTMLFormElement>) => {
+                                    e.preventDefault();
+                                    const target = e.currentTarget;
+                                    console.log(store);
+                                    if (
+                                        !store ||
+                                        !store.release ||
+                                        !store.rules
+                                    )
+                                        return setShow(true);
+                                    const releaseRef = ref(
+                                        storage,
+                                        `user_documents/${
+                                            user.displayName
+                                        }/${user.displayName
+                                            ?.toLowerCase()
+                                            .replace(" ", "")}_${
+                                            user.uid
+                                        }_release.pdf`
+                                    );
+                                    const rulesRef = ref(
+                                        storage,
+                                        `user_documents/${
+                                            user.displayName
+                                        }/${user.displayName
+                                            ?.toLowerCase()
+                                            .replace(" ", "")}_${
+                                            user.uid
+                                        }_rules.pdf`
+                                    );
+                                    
+                                    uploadBytes(releaseRef, store.release).then(
+                                        (snapshot) => {
+                                            console.log(
+                                                "Uploaded a release file!"
+                                            );
+                                        }
+                                    );
+                                    uploadBytes(rulesRef, store.rules).then(
+                                        (snapshot) => {
+                                            console.log(
+                                                "Uploaded a rules file"
+                                            );
+                                        }
+                                    );
+                                }}
                             >
                                 <label className="text-white text-2xl font-semibold underline pb-3 cursor-pointer">
                                     <a className="flex items-center gap-2">
@@ -232,18 +305,18 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                 ></div> */}
                                 <label
                                     className="text-white relative w-full h-[300px] text-xl font-bold flex flex-col justify-center items-center border-dashed border-white border-8 rounded-lg"
-                                    ref={ref}
+                                    ref={ref1}
                                 >
                                     <div
                                         className="cursor-pointer w-full h-full absolute top-0 left-0"
                                         onDrop={dropHandler}
                                         onDragEnter={(e) => {
-                                            ref.current?.classList.add(
+                                            ref1.current?.classList.add(
                                                 "bg-base-purple"
                                             );
                                         }}
                                         onDragLeave={(e) => {
-                                            ref.current?.classList.remove(
+                                            ref1.current?.classList.remove(
                                                 "bg-base-purple"
                                             );
                                         }}
@@ -282,7 +355,13 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                                 console.log(arr);
                                                 return arr;
                                             });
-                                            store.release = curFiles[0];
+                                            setStore((s) => {
+                                                let obj = { ...s };
+                                                obj.release = curFiles
+                                                    ? curFiles[0]
+                                                    : undefined;
+                                                return obj;
+                                            });
                                         }}
                                     ></input>
                                 </label>
@@ -354,7 +433,13 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                                 console.log(arr);
                                                 return arr;
                                             });
-                                            store.rules = curFiles[0];
+                                            setStore((s) => {
+                                                let obj = { ...s };
+                                                obj.rules = curFiles
+                                                    ? curFiles[0]
+                                                    : undefined;
+                                                return obj;
+                                            });
                                         }}
                                     ></input>
                                 </label>

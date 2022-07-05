@@ -9,6 +9,7 @@ import { initializeApp } from "firebase/app";
 import { getDoc, getFirestore, doc } from "firebase/firestore";
 
 import { getAuth, onAuthStateChanged, User } from "firebase/auth";
+import setup from "../functions/setup";
 
 const firebaseConfig = require("../firebase.json");
 const app = initializeApp(firebaseConfig);
@@ -26,6 +27,7 @@ function Dashboard() {
                 // User is signed in, see docs for a list of available properties
                 // https://firebase.google.com/docs/reference/js/firebase.User
                 setUser(chec);
+                
                 // const token = await chec.getIdToken()
                 // console.log(token)
                 // fetch("http://localhost:3001/api/", {
@@ -39,12 +41,13 @@ function Dashboard() {
             }
         });
         if (user) {
-            getStatus(user.uid);
+            getStatus(user);
         }
     }, [navigate, user]);
     const [status, setStatus] = useState([false, false, false, false]);
 
-    const getStatus = async (uid: string) => {
+    const getStatus = async (u: User) => {
+        let uid = u.uid
         let snap = await getDoc(doc(db, "users", uid));
         if (snap.exists()) {
             const data = snap.data();
@@ -56,6 +59,8 @@ function Dashboard() {
             ]);
         } else {
             console.log("Error");
+            setup(u, db)
+            setStatus([false, false, false, true])
         }
     };
 
