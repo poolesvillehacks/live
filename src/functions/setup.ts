@@ -14,5 +14,6 @@ const setup = async (user: User, db: Firestore) => {
                 documents: false,
             },
         });
+        
 }
 export default setup;

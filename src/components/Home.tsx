@@ -18,6 +18,12 @@ interface Props {
     status: Array<Boolean>;
     setStatus: Dispatch<SetStateAction<boolean[]>>;
     db: Firestore;
+    stats: {
+        inProg: boolean;
+        finish: boolean;
+        rejected: boolean;
+    };
+    setStat: Dispatch<SetStateAction<Props["stats"]>>;
 }
 
 interface Files {
@@ -27,7 +33,7 @@ interface Files {
 
 const auth = getAuth();
 const storage = getStorage();
-const Home = ({ user, status, setStatus, db }: Props) => {
+const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
     const ref1 = useRef<HTMLLabelElement>(null);
     const ref2 = useRef<HTMLLabelElement>(null);
     const [fileNames, setFileNames] = useState<string[]>([]);
@@ -74,7 +80,36 @@ const Home = ({ user, status, setStatus, db }: Props) => {
             }
         }
     };
-
+    const statusHandler = () => {
+        if (!status[0] && stats.rejected) {
+            return "Rejected";
+        } else {
+            if (status[0]) {
+                if (!status[1]) {
+                    return "Missing Information";
+                } else {
+                    if (!stats.finish) {
+                        if (stats.rejected) {
+                            return "Rejected";
+                        } else {
+                            return "Awaiting Confirmation";
+                        }
+                    } else {
+                        return "Registered";
+                    }
+                }
+            } else {
+                return "Missing Information";
+            }
+        }
+    };
+    const colors = (result: string) => {
+        // prettier-ignore
+        return (result === "Rejected") ? "text-red-600" :
+                            (result === "Awaiting Confirmation") ? "text-amber-300" : 
+                                (result === "Missing Information") ? "text-amber-500" :
+                                    (result === "Registered") ? "text-green-400" : ""
+    };
     return (
         <div className="flex-grow flex py-8 justify-center relative overflow-y-scroll">
             {status[3] ? (
@@ -275,6 +310,11 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                                         false,
                                                         true,
                                                     ]);
+                                                    setStat({
+                                                        inProg: true,
+                                                        finish: false,
+                                                        rejected: false,
+                                                    });
                                                     await updateDoc(
                                                         doc(
                                                             db,
@@ -284,6 +324,8 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                                         {
                                                             "status.documents":
                                                                 true,
+                                                            "status.rejected":
+                                                                false,
                                                         }
                                                     );
                                                     console.log(
@@ -471,6 +513,20 @@ const Home = ({ user, status, setStatus, db }: Props) => {
                                     type="submit"
                                 ></input>
                             </form>
+                        </div>
+                    )}
+                    {status[1] && status[0] && (
+                        <div className="w-[100%] bg-dark-blue rounded p-6 flex flex-col justify-center items-center">
+                            <h1 className="text-white text-2xl">
+                                Registration Status
+                            </h1>
+                            <p
+                                className={`font-light text-xl ${colors(
+                                    statusHandler()
+                                )} `}
+                            >
+                                {statusHandler()}
+                            </p>
                         </div>
                     )}
                 </div>
