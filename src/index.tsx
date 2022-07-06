@@ -1,30 +1,31 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import Dashboard from './routes/Dashboard';
-
+import React, { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { HashRouter, Routes, Route } from "react-router-dom";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import Dashboard from "./routes/Dashboard";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+    document.getElementById("root") as HTMLElement
 );
 root.render(
-    <BrowserRouter>
-        <Routes>
-            <Route path="/" element={<App />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route
-                path="*"
-                element={
-                    <main style={{ padding: "1rem", color:"white" }}>
-                        <p>There's nothing here!</p>
-                    </main>
-                }
-            />
-        </Routes>
-    </BrowserRouter>
+    <StrictMode>
+        <HashRouter>
+            <Routes>
+                <Route path="/" element={<App />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route
+                    path="*"
+                    element={
+                        <main style={{ padding: "1rem", color: "white" }}>
+                            <p>There's nothing here!</p>
+                        </main>
+                    }
+                />
+            </Routes>
+        </HashRouter>
+    </StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function
