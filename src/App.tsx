@@ -21,6 +21,24 @@ const firebaseConfig = require("./firebase.json");
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+
+
+// const actionCodeSettings = {
+//     // URL you want to redirect back to. The domain (www.example.com) for this
+//     // URL must be in the authorized domains list in the Firebase Console.
+//     url: "https://live.",
+//     // This must be true.
+//     handleCodeInApp: true,
+//     iOS: {
+//         bundleId: "com.example.ios",
+//     },
+//     android: {
+//         packageName: "com.example.android",
+//         installApp: true,
+//         minimumVersion: "12",
+//     },
+//     dynamicLinkDomain: "example.page.link",
+// };
 function App() {
     let [email, setEmail] = useState("");
     let [sent, setSent] = useState(false);
@@ -34,13 +52,7 @@ function App() {
             setEmail(x);
             signInWithEmailLink(auth, email, window.location.href)
                 .then(async (result) => {
-                    // Clear email from storage.
                     window.localStorage.removeItem("emailForSignIn");
-                    // You can access the new user via result.user
-                    // Additional user info profile not available via:
-                    // result.additionalUserInfo.profile == null
-                    // You can check if the user is new or existing:
-                    // result.additionalUserInfo.isNewUser
                     let query = await getDoc(doc(db, "users", result.user.uid))
                     if (!query.exists()) {
                        setup(result.user, db)
