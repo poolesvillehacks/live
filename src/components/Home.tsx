@@ -199,6 +199,11 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                         name: form.fullname.value,
                                         grade: form.grade.value,
                                         school: form.school.value,
+                                        tShirtSize:
+                                            form.shirt.options[
+                                                form.shirt.selectedIndex
+                                            ].value,
+                                        dietaryRestrictions: form.comments.value,
                                         status: {
                                             contact: true,
                                         },
@@ -235,23 +240,49 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                     ></input>
                                 </div>
                             </div>
-                            <div className="flex flex-col gap-3 pt-3">
-                                <label className="text-white font-semibold text-xl">
-                                    School
-                                </label>
-                                <input
-                                    className="p-3 text-white focus:outline-none bg-base-purple rounded"
-                                    name="school"
-                                    list="schools"
-                                    required
-                                ></input>
-                                <datalist id="schools" data-id="schools">
-                                    <option value="Poolesville High School"></option>
-                                    <option value="Montgomery Blair High School"></option>
-                                    <option value="Richard Montgomery High School"></option>
-                                    <option value="Thomas Wootton High School"></option>
-                                </datalist>
+                            <div className="w-[100%] flex flex-row gap-6 pt-3 ">
+                                <div className="flex flex-col gap-3 flex-grow">
+                                    <label className="text-white font-semibold text-xl">
+                                        School
+                                    </label>
+                                    <input
+                                        className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                        name="school"
+                                        list="schools"
+                                        required
+                                    ></input>
+                                    <datalist id="schools" data-id="schools">
+                                        <option value="Poolesville High School"></option>
+                                        <option value="Montgomery Blair High School"></option>
+                                        <option value="Richard Montgomery High School"></option>
+                                        <option value="Thomas Wootton High School"></option>
+                                    </datalist>
+                                </div>
+                                <div className="flex flex-col gap-3 w-28">
+                                    <label className="text-white font-semibold text-xl">
+                                        Shirt Size
+                                    </label>
+
+                                    <select
+                                        name="shirt"
+                                        className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                    >
+                                        <option value="XS">XS</option>
+                                        <option value="S">S</option>
+                                        <option value="M">M</option>
+                                        <option value="L">L</option>
+                                        <option value="XL">XL</option>
+                                    </select>
+                                </div>
                             </div>
+                            <label className="text-white font-semibold text-xl py-3">
+                                Dietary Restrictions and Comments
+                            </label>
+                            <textarea
+                                name="comments"
+                                maxLength={200}
+                                className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                            ></textarea>
                             <input
                                 className="bg-base-purple text-white font-semibold w-1/4 py-3 rounded mt-6 self-end cursor-pointer"
                                 type="submit"

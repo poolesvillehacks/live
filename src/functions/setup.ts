@@ -7,12 +7,15 @@ const setup = async (user: User, db: Firestore) => {
             code: "",
             email: user.email,
             school: "",
+            dietaryRestrictions: "",
             grade: "",
             status: {
                 confirmation: false,
                 contact: false,
                 documents: false,
+                rejected: false
             },
+            tShirtSize: ""
         });
         
 }
