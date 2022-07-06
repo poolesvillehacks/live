@@ -1,6 +1,6 @@
 import React, { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route, BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
@@ -11,7 +11,7 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <StrictMode>
-        <HashRouter>
+        <BrowserRouter>
             <Routes>
                 <Route path="/" element={<App />} />
                 <Route path="dashboard" element={<Dashboard />} />
@@ -24,7 +24,7 @@ root.render(
                     }
                 />
             </Routes>
-        </HashRouter>
+        </BrowserRouter>
     </StrictMode>
 );
 

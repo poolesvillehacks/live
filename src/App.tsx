@@ -59,7 +59,8 @@ function App() {
                     } else {
                         console.log("Already Existed")
                     }
-                    navigate("/dashboard", { replace: true });
+                    
+                    navigate("./dashboard", { replace: true });
                 })
                 .catch((error) => {
                     console.log(error);
@@ -69,7 +70,7 @@ function App() {
                   if (user) {
                       // User is signed in, see docs for a list of available properties
                       // https://firebase.google.com/docs/reference/js/firebase.User
-                      navigate("/dashboard", {replace: true})
+                      navigate("./dashboard", {replace: true})
                       // ...
                   }
               });
