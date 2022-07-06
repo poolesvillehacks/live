@@ -204,7 +204,7 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                                 form.shirt.selectedIndex
                                             ].value,
                                         dietaryRestrictions:
-                                            form.comments.value,
+                                            form.comments.value || "",
                                         status: {
                                             contact: true,
                                         },
@@ -267,7 +267,8 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                     <select
                                         name="shirt"
                                         className="p-3 text-white focus:outline-none bg-base-purple rounded"
-                                    >
+                                        required                                
+                                        >
                                         <option value="XS">XS</option>
                                         <option value="S">S</option>
                                         <option value="M">M</option>
@@ -283,6 +284,7 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                 name="comments"
                                 maxLength={200}
                                 className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                               
                             ></textarea>
                             <input
                                 className="bg-base-purple text-white font-semibold w-1/4 py-3 rounded mt-6 self-end cursor-pointer"
