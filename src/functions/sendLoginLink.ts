@@ -6,7 +6,7 @@ const actionCodeSettings = {
     url: "https://live.poolesvillehacks.tech",
     // This must be true.
     handleCodeInApp: true,
-    dynamicLinkDomain: "https://live.poolesvillehacks.tech",
+
 };
 const sendLoginLink = (email: string) => {
     const auth = getAuth();
