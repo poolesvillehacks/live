@@ -19,8 +19,8 @@ const Resend = ({ email }: { email: string }) => {
     }, [timer]);
 
     return (
-        <div className="flex flex-col items-center gap-10 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2">
-            <p className="text-white font-light text-xl">
+        <div className="flex flex-col items-center gap-10 absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 w-[80%]">
+            <p className="text-white font-light text-xl text-center">
                 A login link has been sent to your email. The email may be in
                 your spam folder.
             </p>

@@ -111,11 +111,11 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                     (result === "Registered") ? "text-green-400" : ""
     };
     return (
-        <div className="flex-grow flex py-8 justify-center relative overflow-y-scroll">
+        <div className="flex-grow h-screen pt-16 md:pt-8 pb-8 overflow-y-scroll  justify-center flex overflow-x-hidden relative">
             {status[3] ? (
-                <div className="flex flex-col gap-10">
-                    <div className="flex justify-left items-center gap-8 ">
-                        <div className="flex flex-col gap-8">
+                <div className="flex flex-col gap-10 m-4 w-fit items-center">
+                    <div className="flex justify-left items-center gap-4 md:gap-8 h-[300px] ">
+                        <div className="flex flex-col h-[100%] justify-between">
                             <div
                                 className={`w-20 h-20 rounded-full ${
                                     status[0] ? "bg-white" : "bg-base-blue"
@@ -168,16 +168,10 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                 </p>
                             </div>
                         </div>
-                        <div className="flex flex-col h-[100%] justify-around gap-8">
-                            <h1 className="text-white text-4xl font-bold">
-                                Submit Contact Information
-                            </h1>
-                            <h1 className="text-white text-4xl font-bold">
-                                Submit Documents
-                            </h1>
-                            <h1 className="text-white text-4xl font-bold">
-                                Confirmation
-                            </h1>
+                        <div className="flex flex-col h-[100%] text-white font-bold justify-around gap-8 text-3xl md:text-4xl">
+                            <p>Submit Contact Information</p>
+                            <p>Submit Documents</p>
+                            <p>Confirmation</p>
                         </div>
                     </div>
                     {!status[0] && (
@@ -222,8 +216,9 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                     </label>
                                     <input
                                         type="text"
-                                        className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                        className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
                                         name="fullname"
+                                        size={1}
                                         required
                                     ></input>
                                 </div>
@@ -235,21 +230,22 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                         type="number"
                                         min="6"
                                         max="12"
-                                        className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                        className="p-3  text-white focus:outline-none bg-base-purple rounded"
                                         name="grade"
                                         required
                                     ></input>
                                 </div>
                             </div>
                             <div className="w-[100%] flex flex-row gap-6 pt-3 ">
-                                <div className="flex flex-col gap-3 flex-grow">
+                                <div className="flex flex-col gap-3 flex-grow ">
                                     <label className="text-white font-semibold text-xl">
                                         School
                                     </label>
                                     <input
-                                        className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                        className="p-3 min-w-32 text-white focus:outline-none bg-base-purple rounded"
                                         name="school"
                                         list="schools"
+                                        size={1}
                                         required
                                     ></input>
                                     <datalist id="schools" data-id="schools">
@@ -267,8 +263,8 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                     <select
                                         name="shirt"
                                         className="p-3 text-white focus:outline-none bg-base-purple rounded"
-                                        required                                
-                                        >
+                                        required
+                                    >
                                         <option value="XS">XS</option>
                                         <option value="S">S</option>
                                         <option value="M">M</option>
@@ -283,8 +279,7 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                             <textarea
                                 name="comments"
                                 maxLength={200}
-                                className="p-3 text-white focus:outline-none bg-base-purple rounded"
-                               
+                                className="p-3 w-[100%] text-white focus:outline-none bg-base-purple rounded"
                             ></textarea>
                             <input
                                 className="bg-base-purple text-white font-semibold w-1/4 py-3 rounded mt-6 self-end cursor-pointer"
@@ -294,10 +289,13 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                     )}
                     {!status[1] && status[0] && (
                         <div>
-                            <div className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8 text-white text-xl items-center justify-center">
-                                Thank you for pre-registering, come back soon for more steps!
-                            </div>
                             {false && (
+                                <div className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8 text-white text-xl items-center justify-center">
+                                    Thank you for pre-registering, come back
+                                    soon for more steps!
+                                </div>
+                            )}
+                            {true && (
                                 <>
                                     <Modal
                                         text="No files to submit"
