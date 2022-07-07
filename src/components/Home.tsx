@@ -289,13 +289,13 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                     )}
                     {!status[1] && status[0] && (
                         <div>
-                            {false && (
+                            {true && (
                                 <div className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8 text-white text-xl items-center justify-center">
                                     Thank you for pre-registering, come back
                                     soon for more steps!
                                 </div>
                             )}
-                            {true && (
+                            {false && (
                                 <>
                                     <Modal
                                         text="No files to submit"
