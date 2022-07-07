@@ -32,7 +32,8 @@ const NavLeft = ({ page, setPage, data, stats, status }: Props) => {
         } else {
             if (status[0]) {
                 if (!status[1]) {
-                    return "Missing Information";
+                    // change to Missing Information after Pre-Registration period
+                    return "Pre-Registered";
                 } else {
                     if (!stats.finish) {
                         if (stats.rejected) {
@@ -54,7 +55,8 @@ const NavLeft = ({ page, setPage, data, stats, status }: Props) => {
         return (result === "Rejected") ? "text-red-600" :
                             (result === "Awaiting Confirmation") ? "text-amber-300" : 
                                 (result === "Missing Information") ? "text-amber-500" :
-                                    (result === "Registered") ? "text-green-400" : ""
+                                    (result === "Registered") ? "text-green-400" : 
+                                        (result === "Pre-Registered") ? "text-green-400" : ""
     };
     return (
         <>
