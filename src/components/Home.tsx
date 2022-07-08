@@ -114,8 +114,8 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
         <div className="flex-grow h-screen pt-16 md:pt-8 pb-8 overflow-y-scroll  justify-center flex overflow-x-hidden relative">
             {status[3] ? (
                 <div className="flex flex-col gap-10 m-4 w-fit items-center">
-                    <div className="flex justify-left items-center gap-4 md:gap-8 h-[300px] ">
-                        <div className="flex flex-col h-[100%] justify-between">
+                    <div className="flex items-center gap-4 md:gap-8 h-[300px] ">
+                        <div className="flex flex-col h-[300px] justify-between">
                             <div
                                 className={`w-20 h-20 rounded-full ${
                                     status[0] ? "bg-white" : "bg-base-blue"
@@ -175,54 +175,157 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                         </div>
                     </div>
                     {!status[0] && (
-                        <form
-                            className="w-[100%] bg-dark-blue rounded p-6 flex flex-col"
-                            onSubmit={async (e: FormEvent<HTMLFormElement>) => {
-                                e.preventDefault();
+                        <div className="w-[100%]">
+                            <form
+                                className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8"
+                                onSubmit={async (
+                                    e: FormEvent<HTMLFormElement>
+                                ) => {
+                                    e.preventDefault();
 
-                                const form = e.currentTarget;
-                                await updateProfile(
-                                    auth.currentUser ? auth.currentUser : user,
-                                    {
-                                        displayName: form.fullname.value,
-                                    }
-                                ).catch((e) => console.log(e));
-                                await setDoc(
-                                    doc(db, "users", user.uid),
-                                    {
-                                        name: form.fullname.value,
-                                        grade: form.grade.value,
-                                        school: form.school.value,
-                                        tShirtSize:
-                                            form.shirt.options[
-                                                form.shirt.selectedIndex
-                                            ].value,
-                                        dietaryRestrictions:
-                                            form.comments.value || "",
-                                        status: {
-                                            contact: true,
+                                    const form = e.currentTarget;
+                                    await updateProfile(
+                                        auth.currentUser
+                                            ? auth.currentUser
+                                            : user,
+                                        {
+                                            displayName: form.fullname.value,
+                                        }
+                                    ).catch((e) => console.log(e));
+                                    await setDoc(
+                                        doc(db, "users", user.uid),
+                                        {
+                                            name: form.fullname.value,
+                                            grade: form.grade.value,
+                                            school: form.school.value,
+                                            tShirtSize:
+                                                form.shirt.options[
+                                                    form.shirt.selectedIndex
+                                                ].value,
+                                            dietaryRestrictions:
+                                                form.comments.value || "",
+                                            status: {
+                                                contact: true,
+                                            },
+                                            discordTag:
+                                                form.discordtag.value || "",
+                                            devpostUsername:
+                                                form.devpostusername.value ||
+                                                "",
                                         },
-                                    },
-                                    { merge: true }
-                                );
+                                        { merge: true }
+                                    );
 
-                                setStatus([true, false, false, true]);
-                            }}
-                        >
-                            <div className="w-[100%] flex flex-row gap-6">
-                                <div className="flex flex-col gap-3 flex-grow">
-                                    <label className="text-white font-semibold text-xl">
-                                        Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
-                                        name="fullname"
-                                        size={1}
-                                        required
-                                    ></input>
+                                    setStatus([true, false, false, true]);
+                                }}
+                            >
+                                <div className="w-[100%] flex flex-row gap-6">
+                                    <div className="flex flex-col gap-3 flex-grow">
+                                        <label className="text-white font-semibold text-xl">
+                                            Name
+                                            <span className="text-red-500 text-sm align-top">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
+                                            name="fullname"
+                                            size={1}
+                                            required
+                                        ></input>
+                                    </div>
+                                    <div className="flex flex-col gap-3 w-28">
+                                        <label className="text-white font-semibold text-xl">
+                                            Grade
+                                            <span className="text-red-500 text-sm align-top">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min="6"
+                                            max="12"
+                                            className="p-3  text-white focus:outline-none bg-base-purple rounded"
+                                            name="grade"
+                                            required
+                                        ></input>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col gap-3 w-28">
+
+                                <div className="w-[100%] flex flex-row gap-6 pt-3 ">
+                                    <div className="flex flex-col gap-3 flex-grow ">
+                                        <label className="text-white font-semibold text-xl">
+                                            School
+                                            <span className="text-red-500 text-sm align-top">
+                                                *
+                                            </span>
+                                        </label>
+                                        <input
+                                            className="p-3 min-w-32 text-white focus:outline-none bg-base-purple rounded"
+                                            name="school"
+                                            list="schools"
+                                            placeholder="Poolesville High School"
+                                            size={1}
+                                            required
+                                        ></input>
+                                        <datalist
+                                            id="schools"
+                                            data-id="schools"
+                                        >
+                                            <option value="Poolesville High School"></option>
+                                            <option value="Montgomery Blair High School"></option>
+                                            <option value="Richard Montgomery High School"></option>
+                                            <option value="Thomas Wootton High School"></option>
+                                        </datalist>
+                                    </div>
+
+                                    <div className="flex flex-col gap-3 w-28">
+                                        <label className="text-white font-semibold text-xl">
+                                            Shirt Size
+                                            <span className="text-red-500 text-sm align-top">
+                                                *
+                                            </span>
+                                        </label>
+
+                                        <select
+                                            name="shirt"
+                                            className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                            required
+                                        >
+                                            <option value="XS">XS</option>
+                                            <option value="S">S</option>
+                                            <option value="M">M</option>
+                                            <option value="L">L</option>
+                                            <option value="XL">XL</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="w-[100%] flex flex-row gap-6 pt-3">
+                                    <div className="flex flex-col gap-3 basis-1/2">
+                                        <label className="text-white font-semibold text-xl">
+                                            Discord Tag
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
+                                            name="discordtag"
+                                            placeholder="example#0000"
+                                            size={1}
+                                        ></input>
+                                    </div>
+                                    <div className="flex flex-col gap-3 basis-1/2">
+                                        <label className="text-white font-semibold text-xl">
+                                            Devpost Username
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
+                                            name="devpostusername"
+                                            size={1}
+                                        ></input>
+                                    </div>
+                                    {/* <div className="flex flex-col gap-3 w-28">
                                     <label className="text-white font-semibold text-xl">
                                         Grade
                                     </label>
@@ -234,58 +337,22 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                         name="grade"
                                         required
                                     ></input>
+                                </div> */}
                                 </div>
-                            </div>
-                            <div className="w-[100%] flex flex-row gap-6 pt-3 ">
-                                <div className="flex flex-col gap-3 flex-grow ">
-                                    <label className="text-white font-semibold text-xl">
-                                        School
-                                    </label>
-                                    <input
-                                        className="p-3 min-w-32 text-white focus:outline-none bg-base-purple rounded"
-                                        name="school"
-                                        list="schools"
-                                        size={1}
-                                        required
-                                    ></input>
-                                    <datalist id="schools" data-id="schools">
-                                        <option value="Poolesville High School"></option>
-                                        <option value="Montgomery Blair High School"></option>
-                                        <option value="Richard Montgomery High School"></option>
-                                        <option value="Thomas Wootton High School"></option>
-                                    </datalist>
-                                </div>
-                                <div className="flex flex-col gap-3 w-28">
-                                    <label className="text-white font-semibold text-xl">
-                                        Shirt Size
-                                    </label>
-
-                                    <select
-                                        name="shirt"
-                                        className="p-3 text-white focus:outline-none bg-base-purple rounded"
-                                        required
-                                    >
-                                        <option value="XS">XS</option>
-                                        <option value="S">S</option>
-                                        <option value="M">M</option>
-                                        <option value="L">L</option>
-                                        <option value="XL">XL</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <label className="text-white font-semibold text-xl py-3">
-                                Dietary Restrictions and Comments
-                            </label>
-                            <textarea
-                                name="comments"
-                                maxLength={200}
-                                className="p-3 w-[100%] text-white focus:outline-none bg-base-purple rounded"
-                            ></textarea>
-                            <input
-                                className="bg-base-purple text-white font-semibold w-1/4 py-3 rounded mt-6 self-end cursor-pointer"
-                                type="submit"
-                            ></input>
-                        </form>
+                                <label className="text-white font-semibold text-xl py-3">
+                                    Dietary Restrictions and Comments
+                                </label>
+                                <textarea
+                                    name="comments"
+                                    maxLength={200}
+                                    className="p-3 w-[100%] text-white focus:outline-none bg-base-purple rounded"
+                                ></textarea>
+                                <input
+                                    className="bg-base-purple text-white font-semibold w-1/4 py-3 rounded mt-6 self-end cursor-pointer"
+                                    type="submit"
+                                ></input>
+                            </form>
+                        </div>
                     )}
                     {!status[1] && status[0] && (
                         <div>
