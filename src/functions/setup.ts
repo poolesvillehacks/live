@@ -9,6 +9,8 @@ const setup = async (user: User, db: Firestore) => {
             school: "",
             dietaryRestrictions: "",
             grade: "",
+            pronouns: "",
+            technicalSkill: "",
             status: {
                 confirmation: false,
                 contact: false,
