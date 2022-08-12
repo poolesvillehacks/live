@@ -177,7 +177,7 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                     {!status[0] && (
                         <div className="w-[100%]">
                             <form
-                                className="w-[100%] bg-dark-blue rounded p-6 flex flex-col mb-8"
+                                className="w-[100%] bg-dark-blue rounded p-6 flex flex-col gap-4 mb-8"
                                 onSubmit={async (
                                     e: FormEvent<HTMLFormElement>
                                 ) => {
@@ -206,7 +206,9 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                                 form.comments.value || "",
                                             status: {
                                                 contact: true,
-                                            },
+                                            }, 
+                                            pronouns: form.pronouns.value,
+                                            technicalSkill: form.technicalSkill.value,
                                             discordTag:
                                                 form.discordtag.value || "",
                                             devpostUsername:
@@ -219,10 +221,25 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                     setStatus([true, false, false, true]);
                                 }}
                             >
-                                <div className="w-[100%] flex flex-row gap-6">
-                                    <div className="flex flex-col gap-3 flex-grow">
+                                <div className="flex flex-col gap-2">
+                                    <label className="text-white font-semibold text-xl">
+                                        Name
+                                        <span className="text-red-500 text-sm align-top">
+                                            *
+                                        </span>
+                                    </label>
+                                    <input
+                                        type="text"
+                                        className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
+                                        name="fullname"
+                                        size={1}
+                                        required
+                                    ></input>
+                                </div>
+                                <div className="flex gap-4">
+                                    <div className="flex flex-col gap-2 flex-grow">
                                         <label className="text-white font-semibold text-xl">
-                                            Name
+                                            Pronouns
                                             <span className="text-red-500 text-sm align-top">
                                                 *
                                             </span>
@@ -230,12 +247,12 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                         <input
                                             type="text"
                                             className="p-3 text-white min-w-32 focus:outline-none bg-base-purple rounded"
-                                            name="fullname"
+                                            name="pronouns"
                                             size={1}
                                             required
                                         ></input>
                                     </div>
-                                    <div className="flex flex-col gap-3 w-28">
+                                    <div className="flex flex-col gap-2 w-28">
                                         <label className="text-white font-semibold text-xl">
                                             Grade
                                             <span className="text-red-500 text-sm align-top">
@@ -246,14 +263,13 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                             type="number"
                                             min="6"
                                             max="12"
-                                            className="p-3  text-white focus:outline-none bg-base-purple rounded"
+                                            className="p-3 min-w-32 text-white focus:outline-none bg-base-purple rounded"
                                             name="grade"
                                             required
                                         ></input>
                                     </div>
                                 </div>
-
-                                <div className="w-[100%] flex flex-row gap-6 pt-3 ">
+                                <div className="flex gap-4 items-center">
                                     <div className="flex flex-col gap-3 flex-grow ">
                                         <label className="text-white font-semibold text-xl">
                                             School
@@ -277,10 +293,10 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                             <option value="Montgomery Blair High School"></option>
                                             <option value="Richard Montgomery High School"></option>
                                             <option value="Thomas Wootton High School"></option>
+                                            <option value="Winston Churchill High School"></option>
                                         </datalist>
                                     </div>
-
-                                    <div className="flex flex-col gap-3 w-28">
+                                    <div className="flex flex-col gap-2 w-28">
                                         <label className="text-white font-semibold text-xl">
                                             Shirt Size
                                             <span className="text-red-500 text-sm align-top">
@@ -298,6 +314,36 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                             <option value="M">M</option>
                                             <option value="L">L</option>
                                             <option value="XL">XL</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col gap-2">
+                                    <div className="flex flex-col gap-3 flex-grow">
+                                        <label className="text-white font-semibold text-xl">
+                                            Technical Skill
+                                            <span className="text-red-500 text-sm align-top">
+                                                *
+                                            </span>
+                                        </label>
+                                        <select
+                                            name="technicalSkill"
+                                            className="p-3 text-white focus:outline-none bg-base-purple rounded"
+                                            required
+                                        >
+                                            <option value="Beginner">
+                                                Beginner: Have never coded
+                                                before OR just started
+                                            </option>
+                                            <option value="Intermediate">
+                                                Intermediate: I have taken CS
+                                                classes OR worked on small
+                                                projects
+                                            </option>
+                                            <option value="Advanced">
+                                                Advanced: I'm comfortable with
+                                                my skill set
+                                            </option>
                                         </select>
                                     </div>
                                 </div>

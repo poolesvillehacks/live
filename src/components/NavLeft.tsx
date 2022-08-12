@@ -1,14 +1,8 @@
-import { useState, Dispatch, SetStateAction, useEffect } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import { signOut, getAuth } from "firebase/auth";
-import {
-    doc,
-    DocumentData,
-    Firestore,
-    getDoc,
-    getFirestore,
-} from "firebase/firestore";
+import { DocumentData } from "firebase/firestore";
 
-import { useNavigate } from "react-router-dom";
+
 interface Props {
     page: string;
     setPage: Dispatch<SetStateAction<string>>;
@@ -25,7 +19,7 @@ interface Props {
 const NavLeft = ({ page, setPage, data, stats, status }: Props) => {
     const auth = getAuth();
     const [open, setOpen] = useState(false);
-    const navigate = useNavigate();
+
     const statusHandler = () => {
         if (!status[0] && stats.rejected) {
             return "Rejected";
