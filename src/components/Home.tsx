@@ -431,7 +431,7 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                             const releaseRef = ref(
                                                 storage,
                                                 `user_documents/${
-                                                    user.displayName
+                                                    user.uid
                                                 }/${user.displayName
                                                     ?.toLowerCase()
                                                     .replace(" ", "")}_${
@@ -441,7 +441,7 @@ const Home = ({ user, status, setStatus, db, stats, setStat }: Props) => {
                                             const rulesRef = ref(
                                                 storage,
                                                 `user_documents/${
-                                                    user.displayName
+                                                    user.uid
                                                 }/${user.displayName
                                                     ?.toLowerCase()
                                                     .replace(" ", "")}_${
